@@ -4,7 +4,9 @@ const app = express();
 const routes = require("./routes");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
+
+const jwt = require('jsonwebtoken');
 
 dotenv.config();
 // Access the port Number
@@ -14,6 +16,12 @@ console.log(port);
 // Database url
 const dataBaseString = process.env.MONGODB_URI||"mongodb+srv://evento22023:Evento22023@cluster.bxdlvdx.mongodb.net/EventoDb";
 console.log(dataBaseString);
+
+// JWT
+app.use(bodyParser.urlencoded({ extended: false }));
+
+
+
 
 //log to check the status of app
 app.use(bodyParser.json())

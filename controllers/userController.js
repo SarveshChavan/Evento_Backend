@@ -1,8 +1,15 @@
 const Users = require("../models/User");
+const jwt = require('jsonwebtoken');
+const dotenv = require("dotenv");
+const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
+dotenv.config();
+
 
 //The user will be checked and if present the isUser will be true else a new user will be created
+// @pravin Implimented Bcrypt password hashing model.
 const registerUser = async (req, res) => {
-    const { email, userName, password } = req.body;
+    var { email, userName, password } = req.body;
     console.log(email);
     console.log(req.body);
     try {
@@ -17,47 +24,41 @@ const registerUser = async (req, res) => {
                     userName: user.userName,
                     email: user.email,
                     gender: user.gender,
-                    securityQuestion:user.securityQuestion,
-                    securityAnswer:user.securityAnswer,
+                    securityQuestion: user.securityQuestion,
+                    securityAnswer: user.securityAnswer,
                     profilePhoto: user.profilePhoto,
                     userDescription: user.userDescription
                 },
-                isUser:true
+                isUser: true
             });
         } else {
             if (email &&
                 userName &&
                 password) {
-                user = await Users.create({
-                    email: email,
-                    userName: userName,
-                    gender: " ",
-                    password: password,
-                    securityQuestion:" ",
-                    securityAnswer:" ",
-                    profilePhoto: " ",
-                    userDescription: " "
-                });
-                if (user) {
-                    return res.status(200).json({
-                        message: "User created successfully",
-                        user: {
-                            id: user.id,
-                            userName: user.userName,
-                            email: user.email,
-                            password: user.password,
-                            gender: user.gender,
-                            securityQuestion:user.securityQuestion,
-                            securityAnswer:user.securityAnswer,
-                            profilePhoto: user.profilePhoto,
-                            userDescription: user.userDescription
-                        },
-                    });
-                } else {
-                    return res.status(400).json({
-                        message: "Something went wrong",
-                    });
-                }
+                bcrypt.hash(password, 10, (err, hash) => {
+                    if (err) {
+                        res.status(500).json({ message: err.message });
+                    } else {
+                        Users.create({
+                            email: email,
+                            userName: userName,
+                            gender: " ",
+                            password: hash,
+                            securityQuestion: " ",
+                            securityAnswer: " ",
+                            profilePhoto: " ",
+                            userDescription: " "
+                        })
+                            .then((user) => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json({ success: true, user: user });
+                            })
+                            .catch((err) => { res.json({ message: "User not created", err: err.message }) });
+                    }
+                })
+
+
             } else {
                 return res.status(400).json({
                     message:
@@ -82,6 +83,8 @@ const getUser = async (req, res) => {
         });
         if (user) {
             console.log(user);
+
+
             res.status(200).json({
                 message: "User found",
                 user: {
@@ -89,11 +92,11 @@ const getUser = async (req, res) => {
                     userName: user.userName,
                     email: user.email,
                     gender: user.gender,
-                    securityQuestion:user.securityQuestion,
-                    securityAnswer:user.securityAnswer,
+                    securityQuestion: user.securityQuestion,
+                    securityAnswer: user.securityAnswer,
                     profilePhoto: user.profilePhoto,
                     userDescription: user.userDescription,
-                },
+                }, token
             });
         } else {
             res.status(400).json({
@@ -148,8 +151,8 @@ const checkUser = async (req, res) => {
                     userName: user.userName,
                     email: user.email,
                     gender: user.gender,
-                    securityQuestion:user.securityQuestion,
-                    securityAnswer:user.securityAnswer,
+                    securityQuestion: user.securityQuestion,
+                    securityAnswer: user.securityAnswer,
                     profilePhoto: user.profilePhoto,
                     userDescription: user.userDescription,
                 },
@@ -168,4 +171,52 @@ const checkUser = async (req, res) => {
     }
 
 }
-module.exports = { registerUser, getUser, updateUser, checkUser };
+
+// userlogin
+const login = async (req, res, next) => {
+    const { email, password } = req.body;
+    Users.findOne({ email: email })
+        .then((user) => {
+           
+                    if (user) {
+                        console.log({pass:password,userpass:user.password});
+                        bcrypt.compare(password, user.password, (err, result) => {
+                            console.log({ result: result });
+                            if (result == true) {
+                                // JWT Tokens
+                                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '3000000s' }, (err, token) => {
+                                    res.statusCode = 200;
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.json({ token });
+                                });
+                            } else {
+                                res.statusCode = 404;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json({ message: "Wrong Password" });
+                            }
+                        })
+                       
+                    } else {
+                        res.statusCode = 404;
+                        res.setHeader('Content-Type', 'application/json');
+                        res.json({ message: "User not found" });
+                    }
+             
+                
+        })
+        .catch((err) => {
+            res.status(500).json({ message: err.message });
+        })
+}
+
+
+const all = async (req, res, next) => {
+
+    Users.find({})
+        .then((users) => {
+            res.status(200).json({ users: users });
+        })
+        .catch((err) => { res.json({ message: err.message }) });
+}
+
+module.exports = { registerUser, getUser, updateUser, checkUser, login, all };
