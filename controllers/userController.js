@@ -5,11 +5,10 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 dotenv.config();
 
-
 //The user will be checked and if present the isUser will be true else a new user will be created
 // @pravin Implimented Bcrypt password hashing model.
 const registerUser = async (req, res) => {
-    var { email, userName, password } = req.body;
+    var { email, userName, password} = req.body;
     console.log(email);
     console.log(req.body);
     try {
@@ -47,18 +46,25 @@ const registerUser = async (req, res) => {
                             securityQuestion: " ",
                             securityAnswer: " ",
                             profilePhoto: " ",
-                            userDescription: " "
+                            userDescription: " ",
+                            token:" "
                         })
                             .then((user) => {
-                                res.statusCode = 200;
-                                res.setHeader('Content-Type', 'application/json');
-                                res.json({ success: true, user: user });
+                                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '86400s' }, (err, token) => {
+                                    
+                                    Users.findOneAndUpdate(email, {
+                                        $set: { token:token },
+                                    })
+                                    .then((user)=>{
+                                        res.statusCode = 200;
+                                        res.json({ message: "User Created Successfully", token:token,user:user });
+                                    })
+                                    .catch((error)=>{console.log(error)});
+                                });
                             })
                             .catch((err) => { res.json({ message: "User not created", err: err.message }) });
                     }
                 })
-
-
             } else {
                 return res.status(400).json({
                     message:
@@ -184,10 +190,16 @@ const login = async (req, res, next) => {
                             console.log({ result: result });
                             if (result == true) {
                                 // JWT Tokens
-                                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '3000000s' }, (err, token) => {
-                                    res.statusCode = 200;
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.json({ token });
+                                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '20s' }, (err, token) => {
+                                    
+                                    Users.findOneAndUpdate(email, {
+                                        $set: { token:token },
+                                    })
+                                    .then((user)=>{
+                                        res.statusCode = 200;
+                                        res.json({ message: "User logedin Successfully", token:token,user:user });
+                                    })
+                                    .catch((error)=>{console.log(error)});
                                 });
                             } else {
                                 res.statusCode = 404;
@@ -209,7 +221,7 @@ const login = async (req, res, next) => {
         })
 }
 
-
+// 
 const all = async (req, res, next) => {
 
     Users.find({})
