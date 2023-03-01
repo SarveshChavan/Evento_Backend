@@ -8,7 +8,7 @@ dotenv.config();
 //The user will be checked and if present the isUser will be true else a new user will be created
 // @pravin Implimented Bcrypt password hashing model.
 const registerUser = async (req, res) => {
-    var { email, userName, password} = req.body;
+    var { email, userName, password } = req.body;
     console.log(email);
     console.log(req.body);
     try {
@@ -47,19 +47,19 @@ const registerUser = async (req, res) => {
                             securityAnswer: " ",
                             profilePhoto: " ",
                             userDescription: " ",
-                            token:" "
+                            token: " "
                         })
                             .then((user) => {
                                 jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '86400s' }, (err, token) => {
-                                    
+
                                     Users.findOneAndUpdate(email, {
-                                        $set: { token:token },
+                                        $set: { token: token },
                                     })
-                                    .then((user)=>{
-                                        res.statusCode = 200;
-                                        res.json({ message: "User Created Successfully", token:token,user:user });
-                                    })
-                                    .catch((error)=>{console.log(error)});
+                                        .then((user) => {
+                                            res.statusCode = 200;
+                                            res.json({ message: "User Created Successfully", token: token, user: user });
+                                        })
+                                        .catch((error) => { console.log(error) });
                                 });
                             })
                             .catch((err) => { res.json({ message: "User not created", err: err.message }) });
@@ -89,8 +89,6 @@ const getUser = async (req, res) => {
         });
         if (user) {
             console.log(user);
-
-
             res.status(200).json({
                 message: "User found",
                 user: {
@@ -183,38 +181,36 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     Users.findOne({ email: email })
         .then((user) => {
-           
-                    if (user) {
-                        console.log({pass:password,userpass:user.password});
-                        bcrypt.compare(password, user.password, (err, result) => {
-                            console.log({ result: result });
-                            if (result == true) {
-                                // JWT Tokens
-                                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '20s' }, (err, token) => {
-                                    
-                                    Users.findOneAndUpdate(email, {
-                                        $set: { token:token },
-                                    })
-                                    .then((user)=>{
-                                        res.statusCode = 200;
-                                        res.json({ message: "User logedin Successfully", token:token,user:user });
-                                    })
-                                    .catch((error)=>{console.log(error)});
-                                });
-                            } else {
-                                res.statusCode = 404;
-                                res.setHeader('Content-Type', 'application/json');
-                                res.json({ message: "Wrong Password" });
-                            }
-                        })
-                       
+            if (user) {
+                console.log({ pass: password, userpass: user.password });
+                bcrypt.compare(password, user.password, (err, result) => {
+                    if (result == true) {
+                        // JWT Tokens
+                        jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '86400s' }, (err, token) => {
+
+                            Users.findOneAndUpdate(email, {
+                                $set: { token: token },
+                            })
+                                .then((user) => {
+                                    res.statusCode = 200;
+                                    res.json({ message: "User logedIn Successfully", token: token });
+                                })
+                                .catch((error) => { console.log(error) });
+                        });
                     } else {
                         res.statusCode = 404;
                         res.setHeader('Content-Type', 'application/json');
-                        res.json({ message: "User not found" });
+                        res.json({ message: "Wrong Password" });
                     }
-             
-                
+                })
+
+            } else {
+                res.statusCode = 404;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({ message: "User not found" });
+            }
+
+
         })
         .catch((err) => {
             res.status(500).json({ message: err.message });

@@ -6,39 +6,39 @@ const eventSchema = new mongoose.Schema({
         // ref: "Users",
         required: true,
     },
-    eventName:{
+    eventName: {
         type: mongoose.Schema.Types.String,
         required: true,
     },
-    category:{
+    category: {
         type: mongoose.Schema.Types.String,
         required: true,
     },
-    address:{
+    address: {
         type: mongoose.Schema.Types.String,
         required: true,
     },
     isFree: {
         type: Boolean,
         default: true,
-        required:true
+        required: true
     },
-    eventDateTime:{
-        type:mongoose.Schema.Types.String,
-        required:true
-    },
-    eventStatus:{
+    eventDateTime: {
         type: mongoose.Schema.Types.String,
-        enum:['upcoming','ongoing','completed'],
-        required:true
+        required: true
+    },
+    eventStatus: {
+        type: mongoose.Schema.Types.String,
+        enum: ['upcoming', 'ongoing', 'completed'],
+        required: true
     },
     eventPhoto: {
         type: mongoose.Schema.Types.String,
-        required:true
+        required: true
     },
     eventDescription: {
         type: mongoose.Schema.Types.String,
-        required:true
+        required: true
     },
 });
 

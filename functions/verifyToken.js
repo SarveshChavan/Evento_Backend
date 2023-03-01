@@ -9,7 +9,6 @@ function verifyToken(req, res, next) {
         // req.token = token;
         console.log(token);
         jwt.verify(token, process.env.JWT_SECRET, (err, authData) => {
-
             if (err) {
                 console.log(authData);
                 res.send({ result: "Invalid Token", err: err.message });
@@ -27,4 +26,4 @@ function verifyToken(req, res, next) {
 }
 
 
-module.exports = {verifyToken};
+module.exports = { verifyToken };
