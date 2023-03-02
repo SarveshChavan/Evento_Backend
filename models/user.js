@@ -1,29 +1,26 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    email:{
+    email: {
         type: mongoose.Schema.Types.String,
         required: true,
     },
-    userName:{
+    userName: {
         type: mongoose.Schema.Types.String,
         required: true,
     },
-    gender:{
+    gender: {
         type: mongoose.Schema.Types.String,
-        required: true,
-    }, 
-    password:{
-        type:mongoose.Schema.Types.String,
-        required:true
     },
-    securityQuestion:{
-        type:mongoose.Schema.Types.String,
-        required:true
+    password: {
+        type: mongoose.Schema.Types.String,
+        required: true
     },
-    securityAnswer:{
-        type:mongoose.Schema.Types.String,
-        required:true
+    securityQuestion: {
+        type: mongoose.Schema.Types.String,
+    },
+    securityAnswer: {
+        type: mongoose.Schema.Types.String,
     },
     profilePhoto: {
         type: mongoose.Schema.Types.String,
@@ -31,9 +28,6 @@ const userSchema = new mongoose.Schema({
     userDescription: {
         type: mongoose.Schema.Types.String,
     },
-    token:{
-        type: mongoose.Schema.Types.String
-    }
 });
 
 const User = mongoose.model("User", userSchema);
