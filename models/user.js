@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: mongoose.Schema.Types.String,
-        required: true,
     },
     password: {
         type: mongoose.Schema.Types.String,
@@ -19,11 +18,9 @@ const userSchema = new mongoose.Schema({
     },
     securityQuestion: {
         type: mongoose.Schema.Types.String,
-        required: true
     },
     securityAnswer: {
         type: mongoose.Schema.Types.String,
-        required: true
     },
     profilePhoto: {
         type: mongoose.Schema.Types.String,
@@ -31,9 +28,6 @@ const userSchema = new mongoose.Schema({
     userDescription: {
         type: mongoose.Schema.Types.String,
     },
-    token: {
-        type: mongoose.Schema.Types.String
-    }
 });
 
 const User = mongoose.model("User", userSchema);

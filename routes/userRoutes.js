@@ -2,12 +2,10 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
 
-// const {verifyToken} = require('../functions/verifyToken');
 
 dotenv.config();
 const {
     registerUser,
-    getUser,
     updateUser,
     checkUser,
     login, all
@@ -17,8 +15,7 @@ const router = require("express").Router();
 
 router.post('/register', registerUser)
 router.put('/user', updateUser)
-router.get('/user', getUser)
-router.get('/user/check', checkUser)
+router.get('/user', checkUser)
 router.post('/login', login)
 router.get('/all', all);
 
