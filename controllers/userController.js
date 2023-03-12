@@ -22,6 +22,7 @@ const registerUser = async (req, res) => {
                     id: user.id,
                     userName: user.userName,
                     email: user.email,
+                    events:user.events,
                     securityQuestion: user.securityQuestion,
                     securityAnswer: user.securityAnswer,
                     profilePhoto: user.profilePhoto,
@@ -41,6 +42,7 @@ const registerUser = async (req, res) => {
                             email: email,
                             userName: userName,
                             password: hash,
+                            events:0,
                             securityQuestion: " ",
                             securityAnswer: " ",
                             profilePhoto: " ",
@@ -144,7 +146,7 @@ const checkUser = async (req, res) => {
         const user = await Users.findOne({ email: email });
         if (user) {
             res.status(200).json({
-                message: "User Already Exist",
+                message: "User Exist",
                 user: user,
                 isUser: true
             })
