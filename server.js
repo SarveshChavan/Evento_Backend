@@ -18,9 +18,6 @@ console.log(port);
 const dataBaseString = process.env.MONGODB_URI || "mongodb+srv://evento22023:Evento22023@cluster.bxdlvdx.mongodb.net/EventoDb";
 console.log(dataBaseString);
 
-app.get('/',(req,res,next)=>{
-    res.json('Hello, Welcome to EVENTO !!!');
-});
 
 // JWT
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,8 +25,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //log to check the status of app
 app.use(bodyParser.json())
 
+app.get('/',(req,res,next)=>{
+    res.json('Hello, Welcome to EVENTO !!!');
+});
 //log to check is the request verified [Correct API_KEY, Token, User]
-app.use(verification);
+// currently off to test deployment
+// app.use(verification);
 
 app.listen(port, function () {
     console.log("App Started at port " + port)
