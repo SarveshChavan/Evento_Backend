@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.String,
         required: true,
     },
-    gender: {
-        type: mongoose.Schema.Types.String,
+    events:{
+        type:mongoose.Schema.Types.Number,
     },
     password: {
         type: mongoose.Schema.Types.String,

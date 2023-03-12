@@ -3,7 +3,6 @@ require("dotenv")
 const User = require("../models/User");
 const jwt = require("jsonwebtoken")
 
-
 const verification = async (req, res, next) => {
     const { path } = req;
     const { token, api_key, authorization } = req.headers;
@@ -48,10 +47,9 @@ const verification = async (req, res, next) => {
                 if (authorization) {
                     const email = authorization.split(" ")[1];
                     const user = await User.findOne({ email: email });
-                    console.log(user.email);
                     if (user) {
                         jwt.verify(token, process.env.JWT_SECRET, (err, auth) => {
-                            if (err) {
+                            if (err) { 
                                 console.log(err);
                                 res.send({ result: "Invalid Token", err: err.message });
                             } else {
@@ -61,11 +59,17 @@ const verification = async (req, res, next) => {
                     }
                     else {
                         console.log("User not found");
-                        res.status(403).send("User not found");
+                        res.status(403).json({
+                            message:"USer not found",
+                            isUser:"false"
+                        });
                     }
                 } else {
                     console.log("Please Provide Authorization");
-                    res.status(403).send("Please Provide Authorization");
+                    res.status(403).json({
+                        message:"Please Provide Authorization",
+                        isUser:"false"
+                    });
                 }
 
             } else {
