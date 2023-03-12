@@ -15,8 +15,12 @@ port = process.env.PORT || 5000;
 console.log(port);
 
 // Database url
-const dataBaseString = process.env.MONGODB_URI;
+const dataBaseString = process.env.MONGODB_URI || "mongodb+srv://evento22023:Evento22023@cluster.bxdlvdx.mongodb.net/EventoDb";
 console.log(dataBaseString);
+
+app.get('/',(req,res,next)=>{
+    res.json('Hello, Welcome to EVENTO !!!');
+});
 
 // JWT
 app.use(bodyParser.urlencoded({ extended: false }));
