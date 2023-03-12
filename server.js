@@ -29,8 +29,7 @@ app.get('/',(req,res,next)=>{
     res.json('Hello, Welcome to EVENTO !!!');
 });
 //log to check is the request verified [Correct API_KEY, Token, User]
-// currently off to test deployment
-// app.use(verification);
+app.use(verification);
 
 app.listen(port, function () {
     console.log("App Started at port " + port)
