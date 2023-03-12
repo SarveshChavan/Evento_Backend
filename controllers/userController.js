@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const User = require("../models/User");
+const User = require("../models/user");
 dotenv.config();
 
 //The user will be checked and if present the isUser will be true else a new user will be created
