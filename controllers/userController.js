@@ -112,20 +112,12 @@ const updateUser = async (req, res) => {
     User.findOne({ email: email })
         .then((user) => {
             if (user) {
-                bcrypt.compare(password, user.password, (err, result) => {
-                    if (result == true) {
-                        User.findOneAndUpdate({
-                            email: email
-                        }, requser).then((user) => {
-                            res.statusCode = 200;
-                            res.json({ message: "User Updated", user: user })
-                        }).catch((error) => { console.log(error) });
-                    } else {
-                        res.statusCode = 404;
-                        res.setHeader('Content-Type', 'application/json');
-                        res.json({ message: "Wrong Password", error: err });
-                    }
-                })
+                User.findOneAndUpdate({
+                    _id: user._id
+                }, requser).then((user) => {
+                    res.statusCode = 200;
+                    res.json({ message: "User Updated", user: user })
+                }).catch((error) => { console.log(error) });
             } else {
                 res.status(400).json({
                     message: "User not found",
@@ -202,6 +194,45 @@ const login = async (req, res, next) => {
         })
 }
 
+
+const changePassword = async (req, res) => {
+    const { email } = req.query;
+    const { securityQuestion, securityAnswer, newPassword } = req.body;
+    try {
+        const user = await User.findOne({ email: email })
+        if (user.securityQuestion == securityQuestion && user.securityAnswer == securityAnswer) {
+            bcrypt.hash(newPassword, 10, (err, hash) => {
+                if (err) {
+                    res.status(500).json({ message: err.message });
+                } else {
+                    User.findOneAndUpdate(user._id, {
+                        $set: { password: hash }
+                    })
+                        .then((user) => {
+                            res.status(200).json({
+                                message: "Password Updated Succesfully",
+                                password: hash
+                            })
+                        }).catch((e) => {
+                            res.status(400).json({
+                                message: "Unable to Update Password",
+                            })
+                        });
+                }
+            })
+        }
+        else {
+            res.status(400).json({
+                message: "Provide Valid Details",
+            })
+        }
+    } catch (e) {
+        res.status(400).json({
+            message: "User Not Found",
+        });
+    }
+
+}
 // 
 const all = async (req, res, next) => {
 
@@ -212,4 +243,4 @@ const all = async (req, res, next) => {
         .catch((err) => { res.json({ message: err.message }) });
 }
 
-module.exports = { registerUser, updateUser, checkUser, login, all };
+module.exports = { registerUser, updateUser, checkUser, login, changePassword, all };

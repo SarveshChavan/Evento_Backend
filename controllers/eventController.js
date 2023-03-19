@@ -53,13 +53,29 @@ const getEventById = async (req, res) => {
 
 //All events will be fetched by there status and will be represented in the form of cards
 const getEvents = async (req, res) => {
-    const { eventStatus } = req.query;
-    console.log(eventStatus);
+    const { email, type } = req.query;
+    let events;
     try {
-        const events = await Event.find({ eventStatus: eventStatus });
+        if (type == "host") {
+            events = await Event.find({ hostEmail: email })
+                .populate("hostEmail");
+        } else {
+            events = await Event.find({hostEmail:{$ne:email}}).
+                populate("hostEmail");
+        }
         return res.status(200).json({
             message: "fetched events",
-            events,
+            events: {
+                upcoming: events.filter(
+                    (event) => event.eventStatus === "upcoming"
+                ),
+                ongoing: events.filter(
+                    (event) => event.eventStatus === "ongoing"
+                ),
+                completed: events.filter(
+                    (event) => event.eventStatus === "completed"
+                ),
+            },
         });
     } catch (e) {
         console.log(e);
@@ -68,20 +84,20 @@ const getEvents = async (req, res) => {
 };
 
 //All events of user where user is hosting the event will be fetched by there status and will be represented in the form of cards
-const getEventsByhostEmail = async (req, res) => {
-    const { hostEmail, eventStatus } = req.query;
-    console.log(eventStatus);
-    try {
-        const events = await Event.find({ hostEmail: hostEmail, eventStatus: eventStatus });
-        return res.status(200).json({
-            message: "fetched your events",
-            events,
-        });
-    } catch (e) {
-        console.log(e);
-        return res.status(500).send(e);
-    }
-};
+// const getEventsByhostEmail = async (req, res) => {
+//     const { hostEmail, eventStatus } = req.query;
+//     console.log(eventStatus);
+//     try {
+//         const events = await Event.find({ hostEmail: hostEmail, eventStatus: eventStatus });
+//         return res.status(200).json({
+//             message: "fetched your events",
+//             events,
+//         });
+//     } catch (e) {
+//         console.log(e);
+//         return res.status(500).send(e);
+//     }
+// };
 
 //The event's inforation will be updated by passing the unique id of event
 const updateEvent = async (req, res) => {
@@ -159,4 +175,4 @@ const deleteEvent = async (req, res) => {
     }
 }
 
-module.exports = { createEvent, getEventById, getEvents, getEventsByhostEmail, updateEvent, endEvent, deleteEvent };
+module.exports = { createEvent, getEventById, getEvents, updateEvent, endEvent, deleteEvent };
