@@ -15,7 +15,7 @@ const verification = async (req, res, next) => {
             res.status(403).send("Invalid api key");
         }
     } //Check For Login request [No need of token as user logging in]
-    else if (path == "/evento/login") {
+    else if (path == "/evento/login" || path=="/evento/password") {
         //Check for api key
         if (api_key === process.env.API_KEY) {
             if (authorization) {
