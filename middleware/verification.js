@@ -6,7 +6,10 @@ const verification = async (req, res, next) => {
     const { path } = req;
     const { token, api_key, authorization } = req.headers;
     //Check For Registration request [No Need of auuthorization and token]
-    if (path == "/evento/register") {
+    if(path == "/evento/home"){
+        next();
+    }
+    else if (path == "/evento/register") {
         //Check for api key
         if (api_key === process.env.API_KEY) {
             next();
