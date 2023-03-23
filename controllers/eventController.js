@@ -38,7 +38,6 @@ const createEvent = async (req, res) => {
 //Event page will be fetched by there unique id provided by mongoDb
 const getEventById = async (req, res) => {
     const { eventId } = req.query;
-    console.log(eventId);
     try {
         const eventDetails = await Event.findById({ _id: eventId });
         return res.status(200).json({
@@ -60,7 +59,7 @@ const getEvents = async (req, res) => {
             events = await Event.find({ hostEmail: email })
                 .populate("hostEmail");
         } else {
-            events = await Event.find({hostEmail:{$ne:email}}).
+            events = await Event.find({ hostEmail: { $ne: email } }).
                 populate("hostEmail");
         }
         return res.status(200).json({
@@ -101,14 +100,13 @@ const getEvents = async (req, res) => {
 
 //The event's inforation will be updated by passing the unique id of event
 const updateEvent = async (req, res) => {
-    const { _id } = req.query;
+    const { eventId } = req.query;
     const event = req.body;
     try {
         const updatedEvent = await Event.findByIdAndUpdate(
-            _id,
+            { _id: eventId },
             event
         );
-        console.log(_id);
         if (updatedEvent) {
             console.log(updatedEvent);
             res.status(200).json({
@@ -165,9 +163,10 @@ const endEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
     const { eventId } = req.query;
     try {
-        await Event.deleteOne({ id: eventId });
+        const event = await Event.remove({ _id: eventId });
         res.status(200).json({
             message: "Event deleted",
+            event:event
         });
     } catch (e) {
         console.log(e);
