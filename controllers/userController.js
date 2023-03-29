@@ -44,8 +44,8 @@ const registerUser = async (req, res) => {
                             totalEvents: "0",
                             securityQuestion: securityQuestion,
                             securityAnswer: securityAnswer,
-                            profilePhoto: " ",
-                            userDescription: " ",
+                            profilePhoto: "https://avatarfiles.alphacoders.com/206/thumb-206822.jpg",
+                            userDescription: "ADD BIO",
                         })
                             .then((user) => {
                                 jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '8640000s' }, (err, token) => {
@@ -107,7 +107,7 @@ const registerUser = async (req, res) => {
 
 //The user information will be updated by providing email
 const updateUser = async (req, res) => {
-    const { email, password } = req.query;
+    const { email} = req.query;
     const requser = req.body
     User.findOne({ email: email })
         .then((user) => {
