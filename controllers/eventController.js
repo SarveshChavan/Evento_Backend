@@ -55,13 +55,12 @@ const getEvents = async (req, res) => {
     const { email, type } = req.query;
     let events;
     try {
-        if (type == "host") {
+        if (type === "host") {
             events = await Event.find({ hostEmail: email })
-                .populate("hostEmail");
         } else {
-            events = await Event.find({ hostEmail: { $ne: email } }).
-                populate("hostEmail");
+            events = await Event.find({ hostEmail: { $ne: email } })
         }
+        console.log(events);
         return res.status(200).json({
             message: "fetched events",
             events: {
@@ -99,25 +98,27 @@ const getEvents = async (req, res) => {
 // };
 
 //The event's inforation will be updated by passing the unique id of event
-const updateEvent = async (req, res) => {
-    const { eventId } = req.query;
-    const event = req.body;
+const startEvent = async (req, res) => {
+    const { _id } = req.query;
+    const { email } = req.query;
+
     try {
-        const updatedEvent = await Event.findByIdAndUpdate(
-            { _id: eventId },
-            event
+        const startEvent = await Event.findByIdAndUpdate(
+            _id, {
+            $set: { eventStatus: 'ongoing' },
+        }
         );
-        if (updatedEvent) {
-            console.log(updatedEvent);
+        if (startEvent) {
             res.status(200).json({
-                message: "Event updated successfully",
-                updatedEvent,
-            });
+                message: "Event Started",
+                startEvent,
+            })
         } else {
             res.status(400).json({
-                message: "Event not found",
+                message: "Event Not Found",
             });
         }
+
     } catch (e) {
         console.log(e);
         return res.status(500).send(e);
@@ -166,7 +167,7 @@ const deleteEvent = async (req, res) => {
         const event = await Event.remove({ _id: eventId });
         res.status(200).json({
             message: "Event deleted",
-            event:event
+            event: event
         });
     } catch (e) {
         console.log(e);
@@ -174,4 +175,4 @@ const deleteEvent = async (req, res) => {
     }
 }
 
-module.exports = { createEvent, getEventById, getEvents, updateEvent, endEvent, deleteEvent };
+module.exports = { createEvent, getEventById, getEvents, startEvent, endEvent, deleteEvent };

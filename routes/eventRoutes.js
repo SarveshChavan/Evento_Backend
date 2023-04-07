@@ -4,7 +4,7 @@ const {
     createEvent,
     getEventById,
     getEvents,
-    updateEvent,
+    startEvent,
     endEvent,
     deleteEvent } = require("../controllers/eventController");
 
@@ -15,7 +15,7 @@ router.post('/event', createEvent)
 router.get('/event', getEventById)
 router.get('/event/type', getEvents)
 router.put('/event/end', endEvent)
-router.put('/event', updateEvent)
+router.put('/event', startEvent)
 router.delete('/event', deleteEvent)
 
 module.exports = (app) => {
