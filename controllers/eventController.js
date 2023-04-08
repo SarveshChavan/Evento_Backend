@@ -54,6 +54,21 @@ const getEventById = async (req, res) => {
 const getEvents = async (req, res) => {
     const { email, type } = req.query;
     let events;
+    const date = new Date();
+    date.setDate(date.getDate() - 1);
+    try {
+        events = await Event.find({eventStatus: 'upcoming' });
+        for (var i = 0; i < events.length; i++) {
+            var eventDate = events[i].eventDateTime.split('-');
+            eventDate = new Date(eventDate[2], eventDate[1] - 1, eventDate[0]);
+            if (eventDate < date) {
+                await Event.remove({ _id: events[i]._id });
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send(e);
+    }
     try {
         if (type === "host") {
             events = await Event.find({ hostEmail: email })
