@@ -75,7 +75,7 @@ const getEvents = async (req, res) => {
         } else {
             events = await Event.find({ hostEmail: { $ne: email } })
         }
-        console.log(events);
+        //console.log(events);
         return res.status(200).json({
             message: "fetched events",
             events: {
